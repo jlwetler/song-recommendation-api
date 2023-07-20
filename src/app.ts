@@ -11,7 +11,7 @@ app.get("/test", (req, res) => {
     res.send("OK");
 })
 
-app.post("/recommendation", recommendationController.postRecommendation);
+app.post("/recommendations", recommendationController.postRecommendation);
 
 app.post("/recommendations/:id/upvote", recommendationController.upvote);
 

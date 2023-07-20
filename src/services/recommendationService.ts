@@ -1,9 +1,13 @@
+import getYouTubeID from "get-youtube-id";
 import * as recommendationRepository from "../repositories/recommendationRepository"
 
 export async function saveRecommendation(name: string, youtubeLink: string) {
+    const youtubeId = getYouTubeID(youtubeLink);
     const score= 0;
 
-    await recommendationRepository.createRecommendation(name, youtubeLink, score);
+    if (!youtubeId) return null;
+
+    return await recommendationRepository.createRecommendation(name, youtubeLink, score);
 }
 
 export async function saveUpvote(id:number) {

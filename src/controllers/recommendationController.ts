@@ -6,9 +6,11 @@ export async function postRecommendation(req: Request, res: Response) {
         const name: string = req.body.name;
         const youtubeLink = req.body.youtubeLink;  
     
-        await recommendationService.saveRecommendation(name, youtubeLink);
+        if (!name || !youtubeLink) return res.sendStatus(400);
 
-        res.sendStatus(201);
+        const result = await recommendationService.saveRecommendation(name, youtubeLink);
+
+        result === null ? res.sendStatus(422) : res.sendStatus(201);
     } catch(error) {
         console.log(error);
         res.sendStatus(500);
