@@ -30,3 +30,18 @@ export async function saveDownvote(id:number) {
     await recommendationRepository.deleteRecommendation(id) :
     await recommendationRepository.downvoteRecommendation(id);
 }
+
+export async function getRandomRecommendation() {
+        const random = Math.random();
+        let recommendations;
+
+        if(random < 0.3) {
+            recommendations = await recommendationRepository.findRecommendationsByScore(-5,10)
+        } else {
+            recommendations = await recommendationRepository.findRecommendationsByScore(11, Infinity)
+        }
+        
+        return recommendations.length === 0 ? null : recommendations[0];
+
+
+}

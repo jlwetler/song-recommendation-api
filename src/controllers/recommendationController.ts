@@ -47,10 +47,13 @@ export async function downvote(req: Request, res: Response) {
     }
 }
 
-export async function randomRecommendation(req: Request, res: Response) {
+export async function getRandomRecommendations(req: Request, res: Response) {
     try {
+        const result = await recommendationService.getRandomRecommendation();
 
-    } catch {
-        
+        res.send(result);
+    } catch(error) {
+        console.log(error);
+        res.sendStatus(500);
     }
 }

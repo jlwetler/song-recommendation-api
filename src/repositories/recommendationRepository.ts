@@ -42,3 +42,23 @@ export async function deleteRecommendation(id:number) {
         WHERE id = $1;
     `,[id])
 }
+
+export async function findRecommendationsByScore(min: number, max: number) {
+    let where = "";
+    let queryArray = [min];
+    
+    if(max === Infinity) {
+        where = "score >= $1";
+    } else {
+        where = "score BETWEEN $1 AND $2";
+        queryArray.push(max);
+    }
+        
+    const result = await connection.query(`
+        SELECT * FROM recommendations
+        WHERE ${where}
+        ORDER BY RANDOM()
+    `,queryArray);
+
+    return result.rows;
+}
