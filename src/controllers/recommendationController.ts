@@ -19,10 +19,12 @@ export async function postRecommendation(req: Request, res: Response) {
 
 export async function upvote(req: Request, res: Response) {
     try {
-        const id: number = parseInt(req.params["id"]);
+        const id: number = parseInt(req.params.id);
 
-        await recommendationService.saveUpvote(id);
+        const result = await recommendationService.saveUpvote(id);
 
+        result === null ? 
+        res.sendStatus(404) :
         res.sendStatus(201);
     } catch(error) {
         console.log(error);
@@ -32,13 +34,23 @@ export async function upvote(req: Request, res: Response) {
 
 export async function downvote(req: Request, res: Response) {
     try {
-        const id: number = parseInt(req.params["id"]);
+        const id: number = parseInt(req.params.id);
 
-        await recommendationService.saveDownvote(id);
+        const result = await recommendationService.saveDownvote(id);
 
+        result === null ? 
+        res.sendStatus(404) :
         res.sendStatus(201);
     } catch(error) {
         console.log(error);
         res.sendStatus(500);
+    }
+}
+
+export async function randomRecommendation(req: Request, res: Response) {
+    try {
+
+    } catch {
+        
     }
 }

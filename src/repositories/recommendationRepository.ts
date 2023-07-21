@@ -18,14 +18,14 @@ export async function upvoteRecommendation(id:number) {
     `,[id])
 }
 
-export async function checkRecommendation(id:number) {
+export async function findRecommendation(id:number) {
     const result = await connection.query(`
-        SELECT score
+        SELECT *
         FROM recommendations
         WHERE id = $1;    
     `, [id])
 
-    return result.rows[0].score;
+    return result.rows[0];
 }
 
 export async function downvoteRecommendation(id:number) {

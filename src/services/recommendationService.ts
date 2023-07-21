@@ -11,15 +11,22 @@ export async function saveRecommendation(name: string, youtubeLink: string) {
 }
 
 export async function saveUpvote(id:number) {
+    const recommendation = await recommendationRepository.findRecommendation(id);
     
-    await recommendationRepository.upvoteRecommendation(id);
+    if (!recommendation) return null;
+
+    return await recommendationRepository.upvoteRecommendation(id);
 }
 
 export async function saveDownvote(id:number) {
     
-    const score: number = await recommendationRepository.checkRecommendation(id);
+    const recommendation = await recommendationRepository.findRecommendation(id);
 
-    score === -4 ? 
-        recommendationRepository.deleteRecommendation(id) : 
-        recommendationRepository.downvoteRecommendation(id);
+    if (!recommendation) return null;
+
+    const score: number = recommendation.score; 
+
+    return (score === -5) ? 
+    await recommendationRepository.deleteRecommendation(id) :
+    await recommendationRepository.downvoteRecommendation(id);
 }
