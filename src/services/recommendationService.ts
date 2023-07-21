@@ -36,12 +36,16 @@ export async function getRandomRecommendation() {
         let recommendations;
 
         if(random < 0.3) {
-            recommendations = await recommendationRepository.findRecommendationsByScore(-5,10)
+            recommendations = await recommendationRepository.findRecommendationsByScore(-5,10, "RANDOM()")
         } else {
-            recommendations = await recommendationRepository.findRecommendationsByScore(11, Infinity)
+            recommendations = await recommendationRepository.findRecommendationsByScore(11, Infinity, "RANDOM()")
         }
         
         return recommendations.length === 0 ? null : recommendations[0];
+}
 
-
+export async function getTopRecommendation() {
+    const recommendations = await recommendationRepository.findRecommendationsByScore(-5,Infinity, "score DESC")
+    
+    return recommendations.length === 0 ? null : recommendations[0];
 }

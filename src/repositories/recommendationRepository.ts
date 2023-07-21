@@ -43,10 +43,10 @@ export async function deleteRecommendation(id:number) {
     `,[id])
 }
 
-export async function findRecommendationsByScore(min: number, max: number) {
+export async function findRecommendationsByScore(min: number, max: number, orderBy: string) {
     let where = "";
     let queryArray = [min];
-    
+
     if(max === Infinity) {
         where = "score >= $1";
     } else {
@@ -57,7 +57,7 @@ export async function findRecommendationsByScore(min: number, max: number) {
     const result = await connection.query(`
         SELECT * FROM recommendations
         WHERE ${where}
-        ORDER BY RANDOM()
+        ORDER BY ${orderBy}
     `,queryArray);
 
     return result.rows;
