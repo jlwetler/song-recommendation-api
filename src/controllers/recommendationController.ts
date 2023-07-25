@@ -1,10 +1,14 @@
 import { Request, Response } from "express";
 import * as recommendationService from "../services/recommendationService";
 
+interface RecommendationBody {
+    name: string;
+    youtubeLink: string;
+}
+
 export async function postRecommendation(req: Request, res: Response) {
     try{
-        const name: string = req.body.name;
-        const youtubeLink = req.body.youtubeLink;  
+        const { name, youtubeLink } = req.body as RecommendationBody;
     
         if (!name || !youtubeLink) return res.sendStatus(400);
 

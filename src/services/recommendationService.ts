@@ -7,7 +7,11 @@ export async function saveRecommendation(name: string, youtubeLink: string) {
 
     if (!youtubeId) return null;
 
-    return await recommendationRepository.createRecommendation(name, youtubeLink, score);
+    const recommendationParams = {
+        name, youtubeLink, score
+    }
+
+    return await recommendationRepository.createRecommendation(recommendationParams);
 }
 
 export async function saveUpvote(id:number) {
@@ -33,19 +37,22 @@ export async function saveDownvote(id:number) {
 
 export async function getRandomRecommendation() {
         const random = Math.random();
-        let recommendations;
+        let recommendations: recommendationRepository.Recommendation[];
+        let params;
 
-        if(random < 0.3) {
-            recommendations = await recommendationRepository.findRecommendationsByScore(-5,10, "RANDOM()")
-        } else {
-            recommendations = await recommendationRepository.findRecommendationsByScore(11, Infinity, "RANDOM()")
-        }
+        (random < 0.3) ?
+            params = { minScore: -5, maxScore:10, orderBy: "RANDOM()" } :
+            params = { minScore: 11, orderBy: "RANDOM()"};
         
+        recommendations = await recommendationRepository.findRecommendationsByScore(params)
+
         return recommendations.length === 0 ? null : recommendations[0];
 }
 
 export async function getTopRecommendation() {
-    const recommendations = await recommendationRepository.findRecommendationsByScore(-5,Infinity, "score DESC")
+    const params = { minScore: -5, orderBy: "score DESC" }
+
+    const recommendations = await recommendationRepository.findRecommendationsByScore(params);
     
     return recommendations.length === 0 ? null : recommendations[0];
 }

@@ -1,6 +1,21 @@
 import connection from "../database";
 
-export async function createRecommendation (name: string, youtubeLink: string, score: number) {
+export interface Recommendation {
+    id: number;
+    name: string;
+    youtubeLink: string;
+    score: number;
+}
+
+interface RecommendationParams {
+    name: string;
+    youtubeLink: string;
+    score: number;
+}
+
+export async function createRecommendation (params: RecommendationParams) {
+    const { name, youtubeLink, score } = params
+
     await connection.query(`
         INSERT INTO recommendations
         (name, "youtubeLink", score)
@@ -18,7 +33,7 @@ export async function upvoteRecommendation(id:number) {
     `,[id])
 }
 
-export async function findRecommendation(id:number) {
+export async function findRecommendation(id:number): Promise<Recommendation> {
     const result = await connection.query(`
         SELECT *
         FROM recommendations
@@ -43,15 +58,24 @@ export async function deleteRecommendation(id:number) {
     `,[id])
 }
 
-export async function findRecommendationsByScore(min: number, max: number, orderBy: string) {
-    let where = "";
-    let queryArray = [min];
+interface QueryParams {
+    minScore: number;
+    maxScore?: number; 
+    orderBy?: string;
+}
 
-    if(max === Infinity) {
+export async function findRecommendationsByScore(
+    params: QueryParams
+) : Promise<Recommendation[]>  {
+    const { minScore, maxScore, orderBy } = params;
+    let where = "";
+    let queryArray = [minScore];
+
+    if(maxScore === undefined) {
         where = "score >= $1";
     } else {
         where = "score BETWEEN $1 AND $2";
-        queryArray.push(max);
+        queryArray.push(maxScore);
     }
         
     const result = await connection.query(`
