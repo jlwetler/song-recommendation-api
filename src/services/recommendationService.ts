@@ -38,11 +38,10 @@ export async function saveDownvote(id:number) {
 export async function getRandomRecommendation() {
         const random = Math.random();
         let recommendations: recommendationRepository.Recommendation[];
-        let params;
-
-        (random < 0.3) ?
-            params = { minScore: -5, maxScore:10, orderBy: "RANDOM()" } :
-            params = { minScore: 11, orderBy: "RANDOM()"};
+        const params =
+            (random < 0.3) ?
+            { minScore: -5, maxScore:10, orderBy: "score" } :
+            { minScore: 11, orderBy: "score"};
         
         recommendations = await recommendationRepository.findRecommendationsByScore(params)
 
@@ -50,7 +49,7 @@ export async function getRandomRecommendation() {
 }
 
 export async function getTopRecommendation() {
-    const params = { minScore: -5, orderBy: "score DESC" }
+    const params = { minScore: -5, orderBy: "score" }
 
     const recommendations = await recommendationRepository.findRecommendationsByScore(params);
     

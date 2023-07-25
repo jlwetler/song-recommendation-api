@@ -1,9 +1,9 @@
-import connection from "../../src/database";
+import prisma from "../../src/database";
 
 export async function cleanDatabase() {
-    await connection.query(`TRUNCATE recommendations RESTART IDENTITY`);
+    await prisma.$queryRaw`TRUNCATE recommendations RESTART IDENTITY`;
 }
 
 export async function endConnection() {
-    await connection.end();
+    await prisma.$disconnect();
 }

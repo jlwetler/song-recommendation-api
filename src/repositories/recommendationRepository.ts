@@ -1,4 +1,4 @@
-import connection from "../database";
+import prisma from "../database";
 
 export interface Recommendation {
     id: number;
@@ -14,48 +14,37 @@ interface RecommendationParams {
 }
 
 export async function createRecommendation (params: RecommendationParams) {
-    const { name, youtubeLink, score } = params
-
-    await connection.query(`
-        INSERT INTO recommendations
-        (name, "youtubeLink", score)
-        VALUES
-        ($1, $2, $3)
-    `, [name, youtubeLink, score]
-    );
+    await prisma.recommendations.create({
+        data: params
+    })
 }
 
 export async function upvoteRecommendation(id:number) {
-    await connection.query(`
-        UPDATE recommendations 
-        SET score = score + 1
-        WHERE id = $1;
-    `,[id])
+    await prisma.recommendations.update({
+        data: {score: {increment: 1}},
+        where: { id }
+    })
 }
 
 export async function findRecommendation(id:number): Promise<Recommendation> {
-    const result = await connection.query(`
-        SELECT *
-        FROM recommendations
-        WHERE id = $1;    
-    `, [id])
+    const result = await prisma.recommendations.findUnique({
+        where: { id }
+    })
 
-    return result.rows[0];
+    return result;
 }
 
 export async function downvoteRecommendation(id:number) {
-    await connection.query(`
-        UPDATE recommendations 
-        SET score = score - 1
-        WHERE id = $1;
-    `,[id])
+    await prisma.recommendations.update({
+        data: {score: {decrement: 1}},
+        where: { id }
+    })
 }
 
 export async function deleteRecommendation(id:number) {
-    await connection.query(`
-        DELETE FROM recommendations 
-        WHERE id = $1;
-    `,[id])
+    await prisma.recommendations.delete({
+        where:{id}
+    })
 }
 
 interface QueryParams {
@@ -68,21 +57,25 @@ export async function findRecommendationsByScore(
     params: QueryParams
 ) : Promise<Recommendation[]>  {
     const { minScore, maxScore, orderBy } = params;
-    let where = "";
-    let queryArray = [minScore];
 
-    if(maxScore === undefined) {
-        where = "score >= $1";
-    } else {
-        where = "score BETWEEN $1 AND $2";
-        queryArray.push(maxScore);
-    }
-        
-    const result = await connection.query(`
+    const recommendations = await prisma.recommendations.findMany({
+        where: {
+          score: maxScore === undefined ? 
+            { gte: minScore, lte: maxScore } : 
+            { gte: minScore },
+        },
+        orderBy: {
+          [orderBy]: 'desc',
+        },
+      });
+
+    return recommendations;
+    /*const result = await connection.query(`
         SELECT * FROM recommendations
         WHERE ${where}
         ORDER BY ${orderBy}
     `,queryArray);
 
-    return result.rows;
+    return result.rows;*/
+
 }
